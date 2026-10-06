@@ -1,0 +1,22 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+dist/
+build/
+.venv/
+.env
+*.egg
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+htmlcov/
+.coverage
+
+# Placed locally for reference when the project is set up, and deliberately not
+# tracked: they are distributed centrally, so a copy committed here would go
+# stale and start contradicting the source.
+CLAUDE.md
+security_rules/
+ci_stubs/
+MANIFEST.md

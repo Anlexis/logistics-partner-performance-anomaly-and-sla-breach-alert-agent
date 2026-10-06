@@ -1,0 +1,50 @@
+[project]
+name = "log-c2-036"
+version = "0.1.1"
+description = "Logistics Partner Performance Anomaly & SLA Breach Alert Agent — AgentCore Template"
+requires-python = ">=3.11"
+# The framework (agenticstar-agentcore) is not published to the public index; it
+# is installed from the package registry the platform provides. Pinning it here
+# would make `pip install -e .` fail, because it cannot be resolved from the
+# default index.
+dependencies = [
+    "agenticstar-agentcore[marketplace,openai]==1.0.3",]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==8.1.1",
+    "pytest-cov==5.0.0",
+    "pytest-asyncio==0.23.6",
+    "ruff==0.4.4",
+    "mypy==1.10.0",
+    "types-PyYAML==6.0.12.20240311",
+]
+
+[build-system]
+requires = ["setuptools==68.2.2"]
+build-backend = "setuptools.build_meta"
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+# The framework wheel ships no type information, so every class inherited from
+# it resolves to Any. Without this, a subclass of a framework base is reported
+# as subclassing an untyped class on every single definition.
+disallow_subclassing_any = false
+exclude = "src/examples/"
+
+[[tool.mypy.overrides]]
+module = ["framework.*", "shared.*", "langgraph.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+# Same cause as disallow_subclassing_any above, in the one place it cannot be
+# worked around: the state schema extends an untyped TypedDict, so every field
+# on it is reported as having an invalid type. There is one cause and one fix —
+# annotating the fields individually does not address it.
+module = ["src.schemas.state"]
+disable_error_code = ["valid-type"]

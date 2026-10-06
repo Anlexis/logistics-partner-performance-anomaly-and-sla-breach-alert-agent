@@ -1,0 +1,45 @@
+# Runtime parameters — loaded by the agent registry and passed as Graph(config=...).
+# Separate from config/agent.yaml, which is the static manifest.
+
+# Retry budget for the backbone.
+max_retry: 3
+# Request timeout in seconds, honoured by framework service clients.
+timeout_s: 30
+
+# Monitoring settings. Resolved once by the outer graph
+# (PartnerSLABreachAlertAgent), forwarded to the monitoring pipeline by
+# PartnerSLADomainWorkflowGraphNode._parent_config() and republished into inner
+# state by PartnerSLADomainWorkflowGraph._extra_initial_state(); the output gate
+# reads the released-report ceiling from the same block. Every value below is
+# live in both the registry deployment and the standalone entry point.
+monitoring:
+  # Contracted service levels, used when the caller declares no override of its
+  # own. A rate is a percentage; a transit time is a number of days.
+  sla_thresholds:
+    delivery_rate_min_pct: 95.0
+    transit_time_max_days: 3.0
+    damage_rate_max_pct: 0.5
+    document_error_rate_max_pct: 2.0
+  # Rolling twelve-month partner averages, used the same way.
+  baseline:
+    delivery_rate_avg_pct: 97.2
+    transit_time_avg_days: 2.1
+    damage_rate_avg_pct: 0.3
+    document_error_rate_avg_pct: 1.1
+  # Third-party logistics network reference figures the partner is set against.
+  peer_benchmark:
+    delivery_rate_pct: 96.1
+    transit_time_avg_days: 2.4
+    damage_rate_pct: 0.4
+    document_error_rate_pct: 1.5
+    peer_count: 47
+    benchmark_period: "2025-Q4"
+  # Drift bands. A metric inside its contracted threshold but this far away from
+  # the partner's own baseline is reported as a warning rather than ignored:
+  # percentage points for a rate, days for a transit time.
+  drift_margin_pct: 1.5
+  drift_margin_days: 0.5
+  # Upper bound on the released report, in characters. A report longer than a
+  # monitoring summary can be says the pipeline is emitting something other than
+  # the figures it computed.
+  max_report_chars: 20000
